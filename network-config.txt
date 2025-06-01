@@ -1,0 +1,227 @@
+# Network Configuration for NCC Transit Hub Lab
+# This file contains the network architecture configuration
+
+project:
+  id: "your-project-id"  # Replace with your actual project ID
+  
+regions:
+  primary: "us-east4"     # Region 1 - Branch Office 1
+  secondary: "us-west2"   # Region 2 - Branch Office 2
+
+zones:
+  primary: "us-east4-a"   # Zone for Region 1
+  secondary: "us-west2-a" # Zone for Region 2
+
+networks:
+  transit:
+    name: "vpc-transit"
+    description: "Central transit hub VPC"
+    routing_mode: "GLOBAL"
+    subnets: []  # Transit hub has no subnets
+    
+  branch_office_1:
+    name: "vpc-a"
+    description: "Branch Office 1 VPC"
+    routing_mode: "REGIONAL"
+    subnets:
+      - name: "vpc-a-sub1-use4"
+        region: "us-east4"
+        ip_range: "10.20.10.0/24"
+        
+  branch_office_2:
+    name: "vpc-b"
+    description: "Branch Office 2 VPC"
+    routing_mode: "REGIONAL"
+    subnets:
+      - name: "vpc-b-sub1-usw2"
+        region: "us-west2"
+        ip_range: "10.20.20.0/24"
+
+cloud_routers:
+  - name: "cr-vpc-transit-use4-1"
+    network: "vpc-transit"
+    region: "us-east4"
+    asn: 65000
+    
+  - name: "cr-vpc-transit-usw2-1"
+    network: "vpc-transit"
+    region: "us-west2"
+    asn: 65000
+    
+  - name: "cr-vpc-a-use4-1"
+    network: "vpc-a"
+    region: "us-east4"
+    asn: 65001
+    
+  - name: "cr-vpc-b-usw2-1"
+    network: "vpc-b"
+    region: "us-west2"
+    asn: 65002
+
+vpn_gateways:
+  - name: "vpc-transit-gw1-use4"
+    network: "vpc-transit"
+    region: "us-east4"
+    
+  - name: "vpc-transit-gw1-usw2"
+    network: "vpc-transit"
+    region: "us-west2"
+    
+  - name: "vpc-a-gw1-use4"
+    network: "vpc-a"
+    region: "us-east4"
+    
+  - name: "vpc-b-gw1-usw2"
+    network: "vpc-b"
+    region: "us-west2"
+
+vpn_tunnels:
+  # Transit to VPC-A connections
+  - name: "transit-to-vpc-a-tu1"
+    local_gateway: "vpc-transit-gw1-use4"
+    peer_gateway: "vpc-a-gw1-use4"
+    router: "cr-vpc-transit-use4-1"
+    region: "us-east4"
+    shared_secret: "gcprocks"
+    bgp:
+      local_ip: "169.254.1.1"
+      peer_ip: "169.254.1.2"
+      peer_asn: 65001
+      
+  - name: "transit-to-vpc-a-tu2"
+    local_gateway: "vpc-transit-gw1-use4"
+    peer_gateway: "vpc-a-gw1-use4"
+    router: "cr-vpc-transit-use4-1"
+    region: "us-east4"
+    shared_secret: "gcprocks"
+    bgp:
+      local_ip: "169.254.1.5"
+      peer_ip: "169.254.1.6"
+      peer_asn: 65001
+
+  # VPC-A to Transit connections
+  - name: "vpc-a-to-transit-tu1"
+    local_gateway: "vpc-a-gw1-use4"
+    peer_gateway: "vpc-transit-gw1-use4"
+    router: "cr-vpc-a-use4-1"
+    region: "us-east4"
+    shared_secret: "gcprocks"
+    bgp:
+      local_ip: "169.254.1.2"
+      peer_ip: "169.254.1.1"
+      peer_asn: 65000
+      
+  - name: "vpc-a-to-transit-tu2"
+    local_gateway: "vpc-a-gw1-use4"
+    peer_gateway: "vpc-transit-gw1-use4"
+    router: "cr-vpc-a-use4-1"
+    region: "us-east4"
+    shared_secret: "gcprocks"
+    bgp:
+      local_ip: "169.254.1.6"
+      peer_ip: "169.254.1.5"
+      peer_asn: 65000
+
+  # Transit to VPC-B connections
+  - name: "transit-to-vpc-b-tu1"
+    local_gateway: "vpc-transit-gw1-usw2"
+    peer_gateway: "vpc-b-gw1-usw2"
+    router: "cr-vpc-transit-usw2-1"
+    region: "us-west2"
+    shared_secret: "gcprocks"
+    bgp:
+      local_ip: "169.254.1.9"
+      peer_ip: "169.254.1.10"
+      peer_asn: 65002
+      
+  - name: "transit-to-vpc-b-tu2"
+    local_gateway: "vpc-transit-gw1-usw2"
+    peer_gateway: "vpc-b-gw1-usw2"
+    router: "cr-vpc-transit-usw2-1"
+    region: "us-west2"
+    shared_secret: "gcprocks"
+    bgp:
+      local_ip: "169.254.1.13"
+      peer_ip: "169.254.1.14"
+      peer_asn: 65002
+
+  # VPC-B to Transit connections
+  - name: "vpc-b-to-transit-tu1"
+    local_gateway: "vpc-b-gw1-usw2"
+    peer_gateway: "vpc-transit-gw1-usw2"
+    router: "cr-vpc-b-usw2-1"
+    region: "us-west2"
+    shared_secret: "gcprocks"
+    bgp:
+      local_ip: "169.254.1.10"
+      peer_ip: "169.254.1.9"
+      peer_asn: 65000
+      
+  - name: "vpc-b-to-transit-tu2"
+    local_gateway: "vpc-b-gw1-usw2"
+    peer_gateway: "vpc-transit-gw1-usw2"
+    router: "cr-vpc-b-usw2-1"
+    region: "us-west2"
+    shared_secret: "gcprocks"
+    bgp:
+      local_ip: "169.254.1.14"
+      peer_ip: "169.254.1.13"
+      peer_asn: 65000
+
+ncc:
+  hub:
+    name: "transit-hub"
+    description: "Transit hub for branch office connectivity"
+    
+  spokes:
+    - name: "bo1"
+      description: "Branch office 1 spoke"
+      region: "us-east4"
+      vpn_tunnels:
+        - "transit-to-vpc-a-tu1"
+        - "transit-to-vpc-a-tu2"
+        
+    - name: "bo2"
+      description: "Branch office 2 spoke"
+      region: "us-west2"
+      vpn_tunnels:
+        - "transit-to-vpc-b-tu1"
+        - "transit-to-vpc-b-tu2"
+
+firewall_rules:
+  - name: "fw-a"
+    network: "vpc-a"
+    direction: "INGRESS"
+    action: "ALLOW"
+    rules:
+      - protocol: "tcp"
+        ports: ["22"]
+      - protocol: "icmp"
+    source_ranges: ["0.0.0.0/0"]
+    
+  - name: "fw-b"
+    network: "vpc-b"
+    direction: "INGRESS"
+    action: "ALLOW"
+    rules:
+      - protocol: "tcp"
+        ports: ["22"]
+      - protocol: "icmp"
+    source_ranges: ["0.0.0.0/0"]
+
+test_vms:
+  - name: "vpc-a-vm-1"
+    zone: "us-east4-a"
+    machine_type: "e2-medium"
+    network: "vpc-a"
+    subnet: "vpc-a-sub1-use4"
+    image_family: "debian-11"
+    image_project: "debian-cloud"
+    
+  - name: "vpc-b-vm-1"
+    zone: "us-west2-a"
+    machine_type: "e2-medium"
+    network: "vpc-b"
+    subnet: "vpc-b-sub1-usw2"
+    image_family: "debian-11"
+    image_project: "debian-cloud"
