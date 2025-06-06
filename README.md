@@ -6,7 +6,7 @@ This repository contains the complete implementation of a Network Connectivity C
 
 https://youtu.be/Klbg4NbNXq8
 
-## Architecture Overview
+## Architecture Overview 
 
 This lab demonstrates how to set up NCC as a transit hub to route traffic between two non-Google networks using Google's backbone network. The architecture simulates two branch offices located in geographically separate locations.
 
