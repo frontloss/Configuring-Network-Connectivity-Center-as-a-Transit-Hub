@@ -54,8 +54,11 @@ echo "Hub details:"
 gcloud alpha network-connectivity hubs describe $NCC_HUB
 
 echo ""
-echo "Spokes:"
-gcloud alpha network-connectivity spokes list --hub=$NCC_HUB
+echo "Spokes 1:"
+gcloud alpha network-connectivity spokes describe $SPOKE_BO1
+echo ""
+echo "Spokes 2:"
+gcloud alpha network-connectivity spokes describe $SPOKE_BO2
 
 echo ""
 echo "NCC Hub and Spoke setup completed successfully!"
