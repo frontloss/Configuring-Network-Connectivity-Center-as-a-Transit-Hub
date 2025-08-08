@@ -7,7 +7,7 @@
 set -e  # Exit on any error
 
 # Load environment variables
-source "$(dirname "$0")/../configs/variables.env"
+source "$(dirname "$0")/variables-env.sh"
 
 echo "========================================="
 echo "Setting up VPC Networks"
