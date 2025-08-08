@@ -2,11 +2,11 @@
 # Environment variables for NCC Transit Hub Lab
 
 # Project Configuration
-export PROJECT_ID="your-project-id"  # Replace with your actual project ID
-export REGION_1="us-east4"           # Replace with your preferred region 1
-export REGION_2="us-west2"           # Replace with your preferred region 2
-export ZONE_1="us-east4-a"           # Replace with your preferred zone 1
-export ZONE_2="us-west2-a"           # Replace with your preferred zone 2
+export PROJECT_ID="qwiklabs-gcp-03-5e83ca1ed109"  # Replace with your actual project ID
+export REGION_1="us-central1"           # Replace with your preferred region 1
+export REGION_2="us-east1"           # Replace with your preferred region 2
+export ZONE_1="us-central1-c"           # Replace with your preferred zone 1
+export ZONE_2="us-east1-d"           # Replace with your preferred zone 2
 
 # Network Configuration
 export VPC_TRANSIT="vpc-transit"
